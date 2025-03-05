@@ -20,7 +20,6 @@
         
         <select id="periodSelector" class="p-2 bg-gray-800 text-white rounded-lg w-full sm:w-auto">
             <option value="7">Última Semana</option>
-            <option value="0">Precio Actual</option>
         </select>
     </div>
 
@@ -29,80 +28,93 @@
     <div id="cryptoStats" class="mt-4 w-full max-w-4xl grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
         <div class="bg-gray-800 p-2 sm:p-3 rounded-lg text-center">
             <h3 class="text-xs sm:text-sm text-gray-400">Precio Actual</h3>
-            <p id="currentPrice" class="text-base sm:text-xl font-bold text-green-400">-</p>
+            <p id="currentPrice" class="text-base sm:text-[18px] font-bold text-green-400">-</p>
         </div>
         <div class="bg-gray-800 p-2 sm:p-3 rounded-lg text-center">
             <h3 class="text-xs sm:text-sm text-gray-400">Cambio 24h</h3>
-            <p id="priceChange" class="text-base sm:text-xl">-</p>
+            <p id="priceChange" class="text-base sm:text-[18px]">-</p>
         </div>
         <div class="bg-gray-800 p-2 sm:p-3 rounded-lg text-center">
             <h3 class="text-xs sm:text-sm text-gray-400">Volumen 24h</h3>
-            <p id="volume24h" class="text-base sm:text-xl">-</p>
+            <p id="volume24h" class="text-base sm:text-[18px]">-</p>
         </div>
-        <div class="bg-gray-800 p-2 sm:p-3 rounded-lg text-center">
+        <div class="bg-gray-800 p-4 sm:p-3 rounded-lg text-center">
             <h3 class="text-xs sm:text-sm text-gray-400">Cap. Mercado</h3>
-            <p id="marketCap" class="text-base sm:text-xl">-</p>
+            <p id="marketCap" class="text-base sm:text-[18px]">-</p>
         </div>
     </div>
 
+    <div id="updateStatus" class="mt-2 text-sm text-gray-400">
+        Última actualización: <span id="lastUpdateTime">-</span>
+    </div>
+
     <script>
-        let myChart = null; 
+        
+        let myChart = null;
+        let cryptoData = null; // Global variable to store crypto data
+        let updateInterval = null; // To store the interval reference
+
         const formatPrice = price => new Intl.NumberFormat('en-US', {
-            style: 'currency', currency: 'USD', minimumFractionDigits: 2
+            style: 'currency', currency: 'USD', minimumFractionDigits: 5
         }).format(price);
 
         const formatNumber = (number) => new Intl.NumberFormat('en-US', {
             minimumFractionDigits: 2, maximumFractionDigits: 2
         }).format(number);
 
+        async function fetchCryptoData() {
+            try {
+                // Fetch current crypto prices
+                const currentResponse = await axios.get('/crypto-prices');
+                cryptoData = currentResponse.data;
+                console.log('Crypto data loaded:', cryptoData);
+                return cryptoData;
+            } catch (error) {
+                console.error('Error fetching crypto prices:', error);
+                throw error;
+            }
+        }
+
         async function fetchHistoricalData() {
             try {
-                // Obtener datos actuales
-                const currentResponse = await axios.get('/crypto-prices');
-                console.log('Respuesta completa:', currentResponse.data);
-                
-                const cryptoData = currentResponse.data;
-                
-                // Obtener datos históricos (suponiendo que tienes un endpoint)
+                // Ensure crypto data is loaded
+                if (!cryptoData) {
+                    await fetchCryptoData();
+                }
+
                 const period = document.getElementById('periodSelector').value;
                 const symbol = document.getElementById('searchCrypto').value.toUpperCase() || 'AAVE';
                 
-                // Verificar si el símbolo existe en los datos
+                // Verify symbol exists
                 if (!cryptoData[symbol]) {
                     console.error(`Símbolo ${symbol} no encontrado. Símbolos disponibles:`, Object.keys(cryptoData));
                     alert(`Símbolo ${symbol} no encontrado. Prueba con: ${Object.keys(cryptoData).join(', ')}`);
                     return;
                 }
 
-                // Datos de la criptomoneda actual
                 const currentCryptoData = cryptoData[symbol];
+                
 
-                // Actualizar estadísticas
+                // Update stats
                 document.getElementById('currentPrice').textContent = formatPrice(currentCryptoData.quote.USD.price);
                 document.getElementById('priceChange').textContent = formatNumber(currentCryptoData.quote.USD.percent_change_24h) + '%';
                 document.getElementById('volume24h').textContent = formatPrice(currentCryptoData.quote.USD.volume_24h);
                 document.getElementById('marketCap').textContent = formatPrice(currentCryptoData.quote.USD.market_cap);
-
-                // Determinar el título del gráfico basado en el período seleccionado
+                
+                // Determine chart data
                 let chartTitle = '';
                 let historicalPrices = [];
 
-                if (period === '0') {
-                    // Precio actual
-                    chartTitle = `Precio Actual de ${symbol}`;
-                    historicalPrices = [[Date.now(), currentCryptoData.quote.USD.price]];
-                } else {
-                    // Datos históricos
-                    const historicalResponse = await axios.get(`/crypto-historical-data?symbol=${symbol}&days=${period}`);
-                    chartTitle = `Precio Histórico de ${symbol} (Últimos ${period} días)`;
-                    
-                    historicalPrices = historicalResponse.data.map(item => [
-                        Date.parse(item.recorded_at),
-                        item.price
-                    ]);
-                }
+                
+                const historicalResponse = await axios.get(`/crypto-historical-data?symbol=${symbol}&days=${period}`);
+                chartTitle = `Precio Histórico de ${symbol} (Últimos ${period} días)`;
+                
+                historicalPrices = historicalResponse.data.map(item => [
+                    Date.parse(item.recorded_at),
+                    item.price
+                ]);
 
-                // Configurar gráfico
+                // Configure chart
                 let chartDom = document.getElementById('cryptoChart');
                 if (!myChart) {
                     myChart = echarts.init(chartDom);
@@ -123,9 +135,9 @@
                         textStyle: { color: '#fff' },
                         formatter: params => {
                             const item = params[0];
-                            // Formatear fecha con opciones locales
                             const localDate = new Date(item.value[0]);
-                            return `Fecha: ${localDate.toLocaleDateString()} ${localDate.toLocaleTimeString()}
+                            const fechaColombia = new Date(localDate.getTime() - (localDate.getTimezoneOffset() * 60000));
+                            return `Fecha: ${fechaColombia.toLocaleString("es-CO", { timeZone: "America/Bogota" })}
                                     <br>Precio: ${formatPrice(item.value[1])}`;
                         }
                     },
@@ -135,7 +147,6 @@
                             color: '#ffffff', 
                             fontWeight: 'bold',
                             fontSize: window.innerWidth < 640 ? 10 : 12,
-                            // Formatear la fecha de manera local
                             formatter: (value) => {
                                 const date = new Date(value);
                                 return date.toLocaleDateString();
@@ -164,7 +175,6 @@
                 myChart.setOption(option);
                 window.addEventListener('resize', () => {
                     myChart.resize();
-                    // Update font sizes on resize
                     option.title.textStyle.fontSize = window.innerWidth < 640 ? 16 : 22;
                     option.xAxis.axisLabel.fontSize = window.innerWidth < 640 ? 10 : 12;
                     option.yAxis.axisLabel.fontSize = window.innerWidth < 640 ? 10 : 12;
@@ -177,18 +187,55 @@
             }
         }
 
-        // Evento de búsqueda
+        // Function to start real-time updates
+        function startRealTimeUpdates() {
+            // Clear any existing interval
+            if (updateInterval) {
+                clearInterval(updateInterval);
+            }
+
+            // Set up new interval for updates every 20 seconds
+            updateInterval = setInterval(async () => {
+                try {
+                    // Reload crypto data
+                    await fetchCryptoData();
+                    
+                    // Reload historical data with current selection
+                    await fetchHistoricalData();
+
+                    const currentTime = new Date()
+                    document.getElementById('lastUpdateTime').textContent = currentTime.toLocaleString("es-CO", { timeZone: "America/Bogota" });
+                    
+
+                } catch (error) {
+                    console.error('Error in real-time update:', error);
+                }
+            }, 120000); 
+        }
+
+        // Stop real-time updates when needed
+        function stopRealTimeUpdates() {
+            if (updateInterval) {
+                clearInterval(updateInterval);
+                updateInterval = null;
+            }
+        }
+
+        // Search event
         document.getElementById('searchCrypto').addEventListener('keyup', (e) => {
             if (e.key === 'Enter') {
                 fetchHistoricalData();
             }
         });
 
-        // Cambio de período
+        // Period change event
         document.getElementById('periodSelector').addEventListener('change', fetchHistoricalData);
 
-        // Inicializar
-        fetchHistoricalData();
+        // Initialize
+        fetchCryptoData()
+            .then(fetchHistoricalData)
+            .then(startRealTimeUpdates);
+
     </script>
 </body>
 </html>

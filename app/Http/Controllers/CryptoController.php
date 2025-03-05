@@ -36,9 +36,23 @@ class CryptoController extends Controller
     public function getHistoricalData(Request $request)
     {
         $symbol = $request->query('symbol', 'BTC');
-        $days = $request->query('days', 30);
+        $days = $request->query('days', 7);
 
-        $historicalData = CryptoHistoricalData::getHistoricalDataBySymbol($symbol, $days);
+        $historicalData = CryptoHistoricalData::where('symbol', $symbol)
+            ->when($days > 0, function ($query) use ($days) {
+                return $query->where('recorded_at', '>=', now()->subDays($days));
+            })
+            ->orderBy('recorded_at', 'asc')
+            ->get();
+
+        // Debug logging
+        \Log::info('Historical Data Retrieved', [
+            'symbol' => $symbol,
+            'days' => $days,
+            'records_count' => $historicalData->count(),
+            'first_record' => $historicalData->first(),
+            'last_record' => $historicalData->last()
+        ]);
 
         return response()->json($historicalData);
     }
