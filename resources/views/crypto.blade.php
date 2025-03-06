@@ -101,7 +101,7 @@
                 }
 
                 const period = document.getElementById('periodSelector').value;
-                const symbol = document.getElementById('searchCrypto').value.toUpperCase() || 'AAVE';
+                const symbol = document.getElementById('searchCrypto').value.toUpperCase() || 'BTC';
                 
                 // Verify symbol exists
                 if (!cryptoData[symbol]) {
@@ -222,9 +222,20 @@
                             ])
                         },
                         itemStyle: { color: '#FF3B3B' },
-                        lineStyle: { width: 3, color: '#FF3B3B' },
+                        lineStyle: { width: 2, color: '#FF3B3B' },
                         symbol: 'circle'
-                    }]
+                    }],
+                    dataZoom: [
+                        {
+                            type: 'slider',
+                            start: 0, 
+                            end: 100, 
+                            filterMode: "weakFilter" 
+                        },
+                        {
+                            type: 'inside' 
+                        }
+                    ]
                 };
 
                 myChart.setOption(option, true);
