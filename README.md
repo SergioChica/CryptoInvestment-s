@@ -55,54 +55,54 @@
 |  `vite` |`^6.0.11`  |Modern and fast frontend packager|
 
 ## Project Structure
-bash
-/mi-proyecto-laravel  
+```bash
+/CryptoInvestment
 │── app/  
-│   ├── Console/          # Comandos Artisan personalizados  
-│   │   ├── Kernel.php/  # Controladores de la aplicación  
+│   ├── Console/          # Custom Artisan commands  
+│   │   ├── Kernel.php    # Kernel for scheduling and Artisan commands  
 │   ├── Http/  
-│   │   ├── Controllers/  # Controladores de la aplicación  
-│   │       ├── CryptoController.php/  # Controladores de la aplicación  
-│   ├── Jobs/           # Modelos de la base de datos   
-│   │   ├── FetchCryptoPricesJob.php/  # Controladores de la aplicación  
-│   ├── Models/           # Modelos de la base de datos   
-│   │   ├── CryptoHistoricalData.php/  # Controladores de la aplicación  
+│   │   ├── Controllers/  # Application controllers  
+│   │       ├── CryptoController.php  # Controller for crypto-related logic  
+│   ├── Jobs/             # Queueable jobs  
+│   │   ├── FetchCryptoPricesJob.php  # Job for fetching cryptocurrency prices  
+│   ├── Models/           # Database models  
+│   │   ├── CryptoHistoricalData.php  # Model for storing historical crypto data  
 │  
-│── bootstrap/            # Configuración de arranque del framework  
-│── config/               # Archivos de configuración  
+│── bootstrap/            # Framework bootstrapping configuration  
+│── config/               # Configuration files  
 │── database/  
-│   ├── factories/        # Fábricas de datos para pruebas  
-│   ├── migrations/       # Migraciones de la base de datos  
-│   │   ├── crypto_historical_data_table.php/  # Controladores de la aplicación  
-│   ├── seeders/          # Seeders para poblar la base de datos  
+│   ├── factories/        # Factories for testing data generation  
+│   ├── migrations/       # Database migrations  
+│   │   ├── crypto_historical_data_table.php  # Migration for crypto historical data table  
+│   ├── seeders/          # Seeders to populate the database  
 │  
-│── public/               # Punto de entrada público (index.php, assets, imágenes, etc.)  
+│── public/               # Public entry point (index.php, assets, images, etc.)  
 │── resources/  
-│   ├── css/              # Archivos CSS  
-│   ├── js/               # Archivos JavaScript  
-│   ├── lang/             # Traducciones de la aplicación  
-│   ├── views/            # Plantillas Blade (Vistas)  
-│   │   ├── crypto.blade.php/  # Controladores de la aplicación  
+│   ├── css/              # CSS files  
+│   ├── js/               # JavaScript files  
+│   ├── lang/             # Application translations  
+│   ├── views/            # Blade templates (views)  
+│   │   ├── crypto.blade.php  # Blade template for crypto-related pages  
 │  
 │── routes/   
-│   ├── web.php           # Rutas de la web  
-│   ├── console.php       # Comandos Artisan personalizados  
+│   ├── web.php           # Web routes  
+│   ├── console.php       # Custom Artisan console commands  
 │  
 │── storage/  
-│   ├── app/              # Almacenamiento de archivos de la aplicación  
-│   ├── framework/        # Caché y sesiones  
-│   ├── logs/             # Archivos de log  
+│   ├── app/              # Application file storage  
+│   ├── framework/        # Cache and sessions  
+│   ├── logs/             # Log files  
 │  
-│── tests/                # Pruebas unitarias y funcionales  
-│── vendor/               # Dependencias de Composer  
-│── .env                  # Configuraciones de entorno  
-│── .env.example                  # Configuraciones de entorno  
-│── artisan               # CLI de Laravel  
-│── composer.json         # Configuración de Composer  
-│── package.json          # Configuración de NPM  
-│── server.php            # Archivo para iniciar el servidor local  
-│── vite.config.js        # Configuración de Laravel Mix  
-
+│── tests/                # Unit and feature tests  
+│── vendor/               # Composer dependencies  
+│── .env                  # Environment configuration  
+│── .env.example          # Example environment configuration  
+│── artisan               # Laravel CLI  
+│── composer.json         # Composer configuration  
+│── package.json          # NPM configuration  
+│── server.php            # File to start the local server  
+│── vite.config.js        # Vite configuration for Laravel  
+```
 
 ## Authors
  
