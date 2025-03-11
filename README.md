@@ -19,6 +19,12 @@
 - > Interactive charts and graphs to analyze market trends.
 - > Comparative insights for different cryptocurrencies.
 
+## Preview Use of Charts
+<img src="./public/grafic.gif" width="800">
+
+## Preview Use Search
+<img src="./public/search.gif" width="800">
+
 ## Technologies Used
 ### Backend
 - ![Laravel](https://img.shields.io/badge/laravel-%23FF2D20.svg?style=for-the-badge&logo=laravel&logoColor=white) Laravel → Backend framework
