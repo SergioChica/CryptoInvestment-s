@@ -101,7 +101,7 @@
                 }
 
                 const period = document.getElementById('periodSelector').value;
-                const symbol = document.getElementById('searchCrypto').value.toUpperCase() || 'BTC';
+                const symbol = document.getElementById('searchCrypto').value.toUpperCase() || 'AAVE';
                 
                 // Verify symbol exists
                 if (!cryptoData[symbol]) {
@@ -152,7 +152,7 @@
                         left: '8%',
                         right: '5%',
                         top: '15%',
-                        bottom: '10%',
+                        bottom: '15%',
                         containLabel: true
                     },
                     tooltip: { 
@@ -227,10 +227,8 @@
                     }],
                     dataZoom: [
                         {
-                            type: 'slider',
                             start: 0, 
                             end: 100, 
-                            filterMode: "weakFilter" 
                         },
                         {
                             type: 'inside' 

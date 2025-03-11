@@ -4,7 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-use App\Jobs\FetchCryptoPricesJob; // Asegúrate de importar el Job
+use App\Jobs\FetchCryptoPricesJob;
 
 class Kernel extends ConsoleKernel
 {

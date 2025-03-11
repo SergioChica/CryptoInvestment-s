@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CryptoController;
+use Illuminate\Support\Facades\DB;
 
 Route::get('/', function () {
     return view('welcome');
@@ -13,4 +14,3 @@ Route::get('/crypto-historical-data', [CryptoController::class, 'getHistoricalDa
 Route::get('crypto', function () {
     return view('crypto');
 });
-
