@@ -10,8 +10,9 @@ class CryptoController extends Controller
 {
     public function getCryptoPrices(Request $request) {
         $apikey = env('COINMARKETCAP_API_KEY');
+        $cryptoSymbols = env('CRYPTO_SYMBOLS');
         
-        $symbols = $request->query('symbols', 'ETH,USDT,XRP,BNB,SOL,USDC,ADA,DOGE,TRX,STETH,PI,HBAR,LEO,WSTETH,LINK,XLM,AVAX,USDS,LTC,TON,SHIB,SUI,OM,DOT,BCH,WETH,USDE,HYPE,BGB,WEETH,UNI,XMR,DAI,NEAR,APT,SUSDS,ONDO,PEPE,ICP,AAVE,ETC,GT,OKB,TRUMP,MNT,TKX');
+        $symbols = $request->query('symbols', $cryptoSymbols);
     
         $response = Http::withHeaders([
             'X-CMC_PRO_API_KEY' => $apikey,
@@ -24,7 +25,7 @@ class CryptoController extends Controller
             $responseData = $response->json();
             $cryptoData = $responseData['data'];
             
-            // Guardar datos históricos
+            // Saving historical data
             CryptoHistoricalData::saveHistoricalData($cryptoData);
     
             return response()->json($cryptoData);
